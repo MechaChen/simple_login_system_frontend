@@ -1,0 +1,17 @@
+{
+  "name": "Simple Login System Frontend",
+  "dockerFile": "Dockerfile",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "orta.vscode-jest",
+    "dsznajder.es7-react-js-snippets"
+  ],
+  "forwardPorts": [5173],
+  "postCreateCommand": "yarn install"
+}
