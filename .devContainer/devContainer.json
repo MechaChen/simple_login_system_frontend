@@ -10,7 +10,10 @@
     "dbaeumer.vscode-eslint",
     "ms-vscode.vscode-typescript-tslint-plugin",
     "orta.vscode-jest",
-    "dsznajder.es7-react-js-snippets"
+    "dsznajder.es7-react-js-snippets",
+    "yoavbls.pretty-ts-errors",
+    "kimlimjustin.jsdoc-generator",
+    "wix.vscode-import-cost"
   ],
   "forwardPorts": [5173],
   "postCreateCommand": "yarn install"
