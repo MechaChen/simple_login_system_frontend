@@ -1,39 +1,25 @@
 import type { TextFieldProps } from '@mui/material/TextField';
-import type { AnySchema, ValidationError } from 'yup';
-import * as yup from 'yup';
 import { useState, useMemo, useCallback, ChangeEventHandler } from 'react';
 import TextField from '@mui/material/TextField';
 
+type SlsInputProps = Omit<TextFieldProps, 'error' | 'helperText'> & {
+  errors: Array<string>,
+}
+
 /**
- * MUI Input with auto-error handling by yup schema
+ * MUI Input with auto-error style
  * @param {TextFieldProps} props an object containing MUI TextFieldProps & yup schema
  * @returns {any}
  */
-
-type SlsInputProps = TextFieldProps & {
-  schema: AnySchema,
-}
-
-const defaultSchema = yup.string().defined();
-
 const SlsInput = function SlsInput(props: SlsInputProps){
-  const { onChange, schema = defaultSchema } = props;
+  const { onChange, errors } = props;
 
   const [value, setValue] = useState('');
-  const [errors, setErrors] = useState<string[]>([]);
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(async (e) => {
     setValue(e.currentTarget.value);
     onChange?.(e);
-
-    try {
-      await schema.validate(e.currentTarget.value);
-      setErrors([]);
-    } catch (err) {
-      setErrors((err as ValidationError).errors);
-    }
-
-  }, [onChange, schema]);
+  }, [onChange]);
 
   const textFieldProps = useMemo(() => {
     const newProps = { ...props };
