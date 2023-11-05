@@ -1,12 +1,11 @@
 import { ChangeEventHandler, FormEvent, useCallback, useState } from 'react';
 import * as yup from 'yup';
 import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 
 import SlsButton from '../../Slscomponents/SlsButton'
 
-
-import './App.css'
 
 type LoginFormStateT = {
   userName: string,
@@ -25,35 +24,65 @@ const defaultFormErrors: LoginFormErrorsT = {
 
 const loginFormSchema = yup.object({
   userName: yup.string().required(),
-  password: yup.string().min(10).required(),
+  password: yup.string().min(6).required(),
 })
 
-function LoginForm() {
+const formatYupErrors = (err) => {
+  return err.inner.reduce((allErrors, curError) => {  
+    allErrors[curError.path] = curError.message;
+    return allErrors;
+  }, { ...defaultFormErrors });
+}
+
+const mockApiLogin = (formState: LoginFormStateT) => new Promise((resolve, reject) => {
+  setTimeout(() => {
+    if (formState.userName !== 'mockUserName' || formState.password !== 'mockPassword') {
+      reject(new Error('Unauthorized username & password'));
+    }
+
+    resolve(undefined);
+  }, 3000);
+})
+
+const LoginForm = function LoginForm() {
   const [formState, setFormState] = useState<LoginFormStateT>({
     userName: '',
     password: '',
   });
 
   const [errors, setErrors] = useState<LoginFormErrorsT>({ ...defaultFormErrors });
+  const [authError, setAuthError] = useState('');
+  const [isLogging, setIsLogging] = useState(false);
 
   const validateLoginData = useCallback(async (formState: LoginFormStateT) => {
-    try {
-      await loginFormSchema.validate(formState, { abortEarly: false });
-      setErrors({ ...defaultFormErrors });
-      
-    } catch (err) {
-      const formatedErrors = err.inner.reduce((allErrors, curError) => {  
-        allErrors[curError.path] = curError.message;
-        return allErrors;
-      }, { ...defaultFormErrors });
-
-      setErrors(formatedErrors);
-    }
+    await loginFormSchema.validate(
+      formState, { abortEarly: false }
+    );
+    setErrors({ ...defaultFormErrors });
   }, []);
 
-  const handleSubmit = useCallback((event: FormEvent) => {
+  const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
-    validateLoginData(formState);
+    
+    try {
+      await validateLoginData(formState);
+
+      setIsLogging(true);
+      await mockApiLogin(formState);
+      setAuthError('');
+
+    } catch (err) {
+      if ('errors' in err) {
+        const formatedErrors = formatYupErrors(err);
+        setErrors(formatedErrors);
+      }
+
+      if ('message' in err) {
+        setAuthError(err.message);
+      }
+    } finally {
+      setIsLogging(false);
+    }
   }, [formState, validateLoginData]);
 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
@@ -86,13 +115,17 @@ function LoginForm() {
         />
       </Box>
       <SlsButton
+        loading={isLogging}
         variant="outlined"
         type="submit"
         fullWidth
-        sx={{ '&.MuiButton-root': { p: 1 } }}
+        sx={{ '&.MuiButton-root': { p: 1, mb: 2 } }}
       >
         Login
       </SlsButton>
+      {authError && (
+        <Alert severity="error">{authError}</Alert>
+      )}
     </form>
   )
 }
