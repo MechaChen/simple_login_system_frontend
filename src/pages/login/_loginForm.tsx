@@ -1,5 +1,6 @@
-import { ChangeEventHandler, FormEvent, useCallback, useState } from 'react';
+import { ChangeEventHandler, FormEvent, useCallback, useMemo, useState } from 'react';
 import * as yup from 'yup';
+import { ValidationError } from 'yup';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -10,29 +11,32 @@ import SlsButton from '../../Slscomponents/SlsButton'
 type LoginFormStateT = {
   userName: string,
   password: string,
-}
+};
 
 type LoginFormErrorsT = {
   userName: Array<string>,
   password: Array<string>,
-}
+};
 
+// Constants
 const defaultFormErrors: LoginFormErrorsT = {
   userName: [],
   password: [],
-}
+};
 
 const loginFormSchema = yup.object({
   userName: yup.string().required(),
   password: yup.string().min(6).required(),
-})
+});
 
+
+// Funtions
 const formatYupErrors = (err) => {
   return err.inner.reduce((allErrors, curError) => {  
     allErrors[curError.path] = curError.message;
     return allErrors;
   }, { ...defaultFormErrors });
-}
+};
 
 const mockApiLogin = (formState: LoginFormStateT) => new Promise((resolve, reject) => {
   setTimeout(() => {
@@ -42,7 +46,9 @@ const mockApiLogin = (formState: LoginFormStateT) => new Promise((resolve, rejec
 
     resolve(undefined);
   }, 3000);
-})
+});
+
+
 
 const LoginForm = function LoginForm() {
   const [formState, setFormState] = useState<LoginFormStateT>({
@@ -61,6 +67,38 @@ const LoginForm = function LoginForm() {
     setErrors({ ...defaultFormErrors });
   }, []);
 
+  const errorTypeMap = useMemo(() => ({
+    schema: {
+      error: ValidationError,
+      setError: (err: Error | ValidationError) => {
+        if (err instanceof ValidationError) {
+          const formatedErrors = formatYupErrors(err);
+          setErrors(formatedErrors);
+        }
+      }
+    },
+    auth: {
+      error: Error,
+      setError: (err: Error | ValidationError) => {
+        if (err instanceof Error) {
+          setAuthError(err.message);
+        }
+      }
+    }
+  }), []);
+
+
+  const handleSubmitErrors = useCallback((err: unknown) => {
+    for (const errorType in errorTypeMap) {
+      const errorTypeInfo = errorTypeMap[errorType as keyof typeof errorTypeMap];
+
+      if (err instanceof errorTypeInfo.error) {
+        errorTypeInfo.setError(err);
+        break;
+      }
+    }
+  }, []);
+
   const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
     
@@ -72,18 +110,16 @@ const LoginForm = function LoginForm() {
       setAuthError('');
 
     } catch (err) {
-      if ('errors' in err) {
-        const formatedErrors = formatYupErrors(err);
-        setErrors(formatedErrors);
-      }
+      handleSubmitErrors(err);
 
-      if ('message' in err) {
-        setAuthError(err.message);
-      }
     } finally {
       setIsLogging(false);
     }
-  }, [formState, validateLoginData]);
+  }, [
+    formState,
+    validateLoginData,
+    handleSubmitErrors,
+  ]);
 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
     const { name, value } = event.target;
@@ -115,16 +151,18 @@ const LoginForm = function LoginForm() {
         />
       </Box>
       <SlsButton
-        loading={isLogging}
+        sx={{ '&.MuiButton-root': { p: 1, mb: 2 } }}
         variant="outlined"
         type="submit"
         fullWidth
-        sx={{ '&.MuiButton-root': { p: 1, mb: 2 } }}
+        loading={isLogging}
       >
         Login
       </SlsButton>
       {authError && (
-        <Alert severity="error">{authError}</Alert>
+        <Alert severity="error">
+          {authError}
+        </Alert>
       )}
     </form>
   )
