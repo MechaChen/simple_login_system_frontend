@@ -14,14 +14,14 @@ type LoginFormStateT = {
 };
 
 type LoginFormErrorsT = {
-  userName: Array<string>,
-  password: Array<string>,
+  userName: string,
+  password: string,
 };
 
-// Constants
+// constants
 const defaultFormErrors: LoginFormErrorsT = {
-  userName: [],
-  password: [],
+  userName: '',
+  password: '',
 };
 
 const loginFormSchema = yup.object({
@@ -30,10 +30,10 @@ const loginFormSchema = yup.object({
 });
 
 
-// Funtions
-const formatYupErrors = (err) => {
-  return err.inner.reduce((allErrors, curError) => {  
-    allErrors[curError.path] = curError.message;
+// funtions
+const formatYupErrors = (err: ValidationError) => {
+  return err.inner.reduce((allErrors, curError) => {
+    allErrors[curError.path as keyof LoginFormStateT] = curError.message;
     return allErrors;
   }, { ...defaultFormErrors });
 };
@@ -49,7 +49,7 @@ const mockApiLogin = (formState: LoginFormStateT) => new Promise((resolve, rejec
 });
 
 
-
+// Component
 const LoginForm = function LoginForm() {
   const [formState, setFormState] = useState<LoginFormStateT>({
     userName: '',
@@ -60,33 +60,28 @@ const LoginForm = function LoginForm() {
   const [authError, setAuthError] = useState('');
   const [isLogging, setIsLogging] = useState(false);
 
-  const validateLoginData = useCallback(async (formState: LoginFormStateT) => {
-    await loginFormSchema.validate(
-      formState, { abortEarly: false }
-    );
-    setErrors({ ...defaultFormErrors });
-  }, []);
-
   const errorTypeMap = useMemo(() => ({
     schema: {
       error: ValidationError,
       setError: (err: Error | ValidationError) => {
-        if (err instanceof ValidationError) {
-          const formatedErrors = formatYupErrors(err);
-          setErrors(formatedErrors);
-        }
+        const formatedErrors = formatYupErrors(err as ValidationError);
+        setErrors(formatedErrors);
       }
     },
     auth: {
       error: Error,
       setError: (err: Error | ValidationError) => {
-        if (err instanceof Error) {
-          setAuthError(err.message);
-        }
+        setAuthError(err.message);
       }
     }
   }), []);
 
+  const validateLoginData = useCallback(async (formState: LoginFormStateT) => {
+    await loginFormSchema.validate(
+      formState, { abortEarly: false }
+    );
+    setErrors({ ...defaultFormErrors }); // clear error
+  }, []);
 
   const handleSubmitErrors = useCallback((err: unknown) => {
     for (const errorType in errorTypeMap) {
@@ -97,7 +92,7 @@ const LoginForm = function LoginForm() {
         break;
       }
     }
-  }, []);
+  }, [errorTypeMap]);
 
   const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
