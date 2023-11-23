@@ -7,10 +7,14 @@ import LoadingButton from '@mui/lab/LoadingButton';
 /*
   @ Requirements
     - with default loading style, which contain Loading icon on left, and text become 'Loading...'
+
   @ Architecture
+
   @ Data Model
+
   @ Interface Definition
     - same as MUI
+    
   @ Optimization
 */
 
