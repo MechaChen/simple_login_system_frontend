@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FormEvent, useCallback, useMemo, useState } from 'react';
+import { ChangeEventHandler, FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import * as yup from 'yup';
 import { ValidationError } from 'yup';
 import TextField from '@mui/material/TextField';
@@ -6,6 +6,7 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 
 import SlsButton from '../../Slscomponents/SlsButton'
+import { useDispatch, useSelector } from '../../utils/myReactRedux';
 
 
 type LoginFormStateT = {
@@ -94,6 +95,8 @@ const LoginForm = function LoginForm() {
     }
   }, [errorTypeMap]);
 
+  const dispatch = useDispatch();
+
   const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
     
@@ -102,6 +105,10 @@ const LoginForm = function LoginForm() {
 
       setIsLogging(true);
       await mockApiLogin(formState);
+      dispatch({
+        type: 'GEN_AUTH',
+        payload: new Date().toISOString(),
+      });
       setAuthError('');
 
     } catch (err) {
@@ -111,10 +118,17 @@ const LoginForm = function LoginForm() {
       setIsLogging(false);
     }
   }, [
+    dispatch,
     formState,
     validateLoginData,
     handleSubmitErrors,
   ]);
+
+  const tokenData = useSelector((state) => state.tokenData);
+
+  useEffect(() => {
+    console.log('tokenData =>', tokenData);
+  }, [tokenData]);
 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
     const { name, value } = event.target;

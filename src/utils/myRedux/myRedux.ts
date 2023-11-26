@@ -1,6 +1,6 @@
 // @ts-nocheck
 const createStore = (reducer) => {
-  let currentState;
+  let currentState = reducer(undefined, {});
   let subscribers = [];
 
   const dispatch = (action) => {

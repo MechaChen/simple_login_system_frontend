@@ -3,9 +3,9 @@
 import { useReduxContext } from "./_ReduxContext";
 
 const useDispatch = () => {
-  const { store } = useReduxContext();
+  const { dispatch } = useReduxContext();
 
-  return store.dispatch;
+  return dispatch;
 };
 
 export default useDispatch;

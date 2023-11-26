@@ -7,10 +7,11 @@ import { useReduxContext } from './_ReduxContext';
 const trivialInitialNumberState = 0;
 
 const alwaysUpdatedReducer = (state, action) => {
-  switch(action.type) {
-    default:
-      return state + 1;
-  }
+  return state + 1;
+  // switch(action.type) {
+  //   default:
+  //     return state + 1;
+  // }
 }
 
 const defaultEqualityFn = (prevState, newState) => {
@@ -31,12 +32,12 @@ const useSelector = (
     trivialInitialNumberState,
   );
 
-  const { store } = useReduxContext();
+  const { getState, subscribe } = useReduxContext();
 
   const prevSelectedState = useRef(null);
 
   const updateIfChange = () => {
-    const newSelectedState = selector(store.getState());
+    const newSelectedState = selector(getState());
 
     if (equalityFn(prevSelectedState, newSelectedState)) {
       return;
@@ -47,12 +48,14 @@ const useSelector = (
   };
 
   useEffect(() => {
-    const unsubscribe = store.subscribe(updateIfChange);
+    const unsubscribe = subscribe(updateIfChange);
 
     return () => {
       unsubscribe();
     }
   }, []);
+
+  return getState();
 };
 
 export default useSelector;
