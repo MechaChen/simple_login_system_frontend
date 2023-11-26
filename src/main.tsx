@@ -7,20 +7,35 @@ import { Provider } from './utils/myReactRedux'
 
 import './index.css'
 
-const initialState = {
-  tokenData: {
-    expiredAt: '',
+export type ROUTES = 'HOME' | 'LOGIN' | 'MAIN';
+
+export type RootStateT = {
+  route: ROUTES,
+  authData: {
+    tokenExpiredAt: string,
+  }
+}
+
+const initialState: RootStateT = {
+  route: 'HOME',
+  authData: {
+    tokenExpiredAt: '',
   }
 }
 
 const reducer = (state = initialState, action) => {
   switch(action.type) {
-    case 'GEN_AUTH':
+    case 'GEN_AUTH_TOKEN':
       return {
         ...state,
-        tokenData: {
-          expiredAt: action.payload,
+        authData: {
+          tokenExpiredAt: action.payload,
         },
+      }
+    case 'REDIRECT_PAGE':
+      return {
+        ...state,
+        route: action.payload,
       }
     default:
       return state;

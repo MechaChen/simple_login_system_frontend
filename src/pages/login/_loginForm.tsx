@@ -106,7 +106,7 @@ const LoginForm = function LoginForm() {
       setIsLogging(true);
       await mockApiLogin(formState);
       dispatch({
-        type: 'GEN_AUTH',
+        type: 'GEN_AUTH_TOKEN',
         payload: new Date().toISOString(),
       });
       setAuthError('');

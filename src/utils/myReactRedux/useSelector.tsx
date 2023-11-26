@@ -55,7 +55,7 @@ const useSelector = (
     }
   }, []);
 
-  return getState();
+  return selector(getState());
 };
 
 export default useSelector;
