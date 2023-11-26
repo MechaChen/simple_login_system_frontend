@@ -23,16 +23,29 @@ const initialState: RootStateT = {
   }
 }
 
+export const actions = {
+  SET_AUTH_DATA: 'SET_AUTH_DATA',
+  REMOVE_AUTH_DATA: 'REMOVE_AUTH_DATA',
+  REDIRECT_PAGE: 'REDIRECT_PAGE',
+};
+
 const reducer = (state = initialState, action) => {
   switch(action.type) {
-    case 'GEN_AUTH_TOKEN':
+    case actions.SET_AUTH_DATA:
       return {
         ...state,
         authData: {
           tokenExpiredAt: action.payload,
         },
       }
-    case 'REDIRECT_PAGE':
+    case actions.REMOVE_AUTH_DATA:
+      return {
+        ...state,
+        authData: {
+          tokenExpiredAt: '',
+        },
+      }
+    case actions.REDIRECT_PAGE:
       return {
         ...state,
         route: action.payload,

@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 
 import SlsButton from '../../Slscomponents/SlsButton'
 import { useDispatch, useSelector } from '../../utils/myReactRedux';
+import { actions } from '../../main';
 
 
 type LoginFormStateT = {
@@ -105,10 +106,17 @@ const LoginForm = function LoginForm() {
 
       setIsLogging(true);
       await mockApiLogin(formState);
+
       dispatch({
-        type: 'GEN_AUTH_TOKEN',
+        type: actions.SET_AUTH_DATA,
         payload: new Date().toISOString(),
       });
+
+      dispatch({
+        type: actions.REDIRECT_PAGE,
+        payload: 'MAIN',
+      });
+
       setAuthError('');
 
     } catch (err) {
