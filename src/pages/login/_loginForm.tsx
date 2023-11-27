@@ -107,9 +107,12 @@ const LoginForm = function LoginForm() {
       setIsLogging(true);
       await mockApiLogin(formState);
 
+      const curDate = new Date();
+      const oneHourTokenValidTime = curDate.setHours(curDate.getHours() + 12);
+
       dispatch({
         type: actions.SET_AUTH_DATA,
-        payload: new Date().toISOString(),
+        payload: oneHourTokenValidTime,
       });
 
       dispatch({

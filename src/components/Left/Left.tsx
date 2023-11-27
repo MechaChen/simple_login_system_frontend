@@ -12,7 +12,7 @@ function Left() {
   const tokenExpiredAt = useSelector((state: RootStateT) => state.authData.tokenExpiredAt);
 
   const isTokenValid = useMemo(() => (
-    tokenExpiredAt && tokenExpiredAt < new Date().toISOString()
+    tokenExpiredAt && new Date(tokenExpiredAt) > new Date()
   ), [tokenExpiredAt]);
 
   const dispatch = useDispatch();
@@ -41,7 +41,7 @@ function Left() {
       <Stack
         spacing={2}
         height="calc(100% - 20px)"
-        width="100%"
+        width="90%"
       >
         <Button
           variant='outlined'
