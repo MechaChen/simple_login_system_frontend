@@ -23,7 +23,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
  * @param {ButtonProps} props
  * @returns {any}
  */
-const SlsButton = function SlsButton(props: LoadingButtonProps){
+const ManualButton = function ManualButton(props: LoadingButtonProps){
 
   const buttonProps = useMemo(() => {
     const newProps = { ...props };
@@ -44,4 +44,4 @@ const SlsButton = function SlsButton(props: LoadingButtonProps){
   );
 }
 
-export default SlsButton;
+export default ManualButton;

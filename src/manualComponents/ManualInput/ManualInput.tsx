@@ -2,7 +2,7 @@ import type { TextFieldProps } from '@mui/material/TextField';
 import { useState, useMemo, useCallback, ChangeEventHandler } from 'react';
 import TextField from '@mui/material/TextField';
 
-type SlsInputProps = Omit<TextFieldProps, 'error' | 'helperText'> & {
+type ManualInputProps = Omit<TextFieldProps, 'error' | 'helperText'> & {
   errors: Array<string>,
 }
 
@@ -11,7 +11,7 @@ type SlsInputProps = Omit<TextFieldProps, 'error' | 'helperText'> & {
  * @param {TextFieldProps} props an object containing MUI TextFieldProps & yup schema
  * @returns {any}
  */
-const SlsInput = function SlsInput(props: SlsInputProps){
+const ManualInput = function ManualInput(props: ManualInputProps){
   const { onChange, errors } = props;
 
   const [value, setValue] = useState('');
@@ -39,4 +39,4 @@ const SlsInput = function SlsInput(props: SlsInputProps){
   );
 }
 
-export default SlsInput;
+export default ManualInput;

@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 
-import SlsButton from '../../Slscomponents/SlsButton'
+import ManualButton from '../../manualComponents/ManualButton'
 import { useDispatch, useSelector } from '../../utils/myReactRedux';
 import { actions } from '../../main';
 
@@ -167,7 +167,7 @@ const LoginForm = function LoginForm() {
           helperText={errors.password}
         />
       </Box>
-      <SlsButton
+      <ManualButton
         sx={{ '&.MuiButton-root': { p: 1, mb: 2 } }}
         variant="outlined"
         type="submit"
@@ -175,7 +175,7 @@ const LoginForm = function LoginForm() {
         loading={isLogging}
       >
         Login
-      </SlsButton>
+      </ManualButton>
       {authError && (
         <Alert severity="error">
           {authError}
