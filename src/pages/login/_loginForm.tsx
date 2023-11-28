@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEventHandler, FormEvent, useCallback, useMemo, useState } from 'react';
 import * as yup from 'yup';
 import { ValidationError } from 'yup';
 import TextField from '@mui/material/TextField';
@@ -6,7 +6,7 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 
 import ManualButton from '../../manualComponents/ManualButton'
-import { useDispatch, useSelector } from '../../utils/myReactRedux';
+import { useDispatch } from '../../utils/myReactRedux';
 import { actions } from '../../main';
 
 
@@ -134,12 +134,6 @@ const LoginForm = function LoginForm() {
     validateLoginData,
     handleSubmitErrors,
   ]);
-
-  const tokenData = useSelector((state) => state.tokenData);
-
-  useEffect(() => {
-    console.log('tokenData =>', tokenData);
-  }, [tokenData]);
 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
     const { name, value } = event.target;
